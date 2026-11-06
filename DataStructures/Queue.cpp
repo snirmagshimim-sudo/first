@@ -5,20 +5,15 @@
 void initQueue(Queue* q, unsigned int size)
 {
     /*
-    fills values for all the spaces in the queue
+    initializes the struct
     */
     
-    if(size == 0)
-    {
-        return;
-    }
-    
-    for (int i = 0; i < size; i++)
-    {
-        std::cout << "Enter number " << i + 1 << ": ";
-        std::cin >> q->value;
+    q->arr = new int[size];
+    q->size = size;
 
-        q = q->next;
+    for(int i = 0; i < q->size; i++)
+    {
+        q->arr[i] = 0;
     }
      
 }
@@ -29,11 +24,9 @@ void cleanQueue(Queue* q)
     removes all the values from the list
     */
     
-    if(q)
+    for(int i = 0; i < q->size; i++)
     {
-        q->value = 0;
-
-        cleanQueue(q->next);
+        q->arr[i] = 0;
     }
 } 
 
@@ -43,20 +36,19 @@ void enqueue(Queue* q, unsigned int newValue)
     places a value  into the furthermost empty space in the queue
     */
     
-    if(q->value != 0)
+    if(q->arr[0] != 0)
     {
-        std::cout << "The queue is full!\n";
+        std::cout << "Queue is full!\n";
         return;
     }
-
-    else
+    
+    for(int i = 0; i < q->size; i++)
     {
-        while(q->next != NULL && q->next->value == 0)
+        if(q->arr[i + 1] != 0 || i == q->size - 1)
         {
-            q = q->next;
+            q->arr[i] = newValue;
+            return;
         }
-
-        q->value = newValue;
     }
 }
 
@@ -68,18 +60,14 @@ int dequeue(Queue* q)
     
     int value = 0;
 
-    while(q != NULL && q->value == 0)
+    value = q->arr[q->size - 1];
+
+    for(int i = q->size; i > 0; i--)
     {
-        q = q->next;
+        q->arr[i] = q->arr[i - 1];
     }
 
-    if(q == NULL)
-    {
-        return -1;
-    }
-
-    value = q->value;
-    q->value = 0;
+    q->arr[0] = 0;
 
     return value;
 }
@@ -90,14 +78,12 @@ bool isEmpty(Queue *s)
     checks if the queue is empty
     */
     
-    while(s)
+    for(int i = 0; i < s->size; i++)
     {
-        if(s->value != 0)
+        if(s->arr[i] != 0)
         {
             return false;
         }
-
-        s = s->next;
     }
 
     return true;
@@ -109,29 +95,17 @@ bool isFull(Queue* s)
     Checks if the queue is full
     */
 
-    while(s)
+    for(int i = 0; i < s->size; i++)
     {
-        if(s->value == 0)
+        if(s->arr[i] == 0)
         {
             return false;
         }
-
-        s = s->next;
     }
 
     return true;
 }
 
-/*Queue *createNode()
-{
-    Queue *newNode = NULL;
-
-    newNode = new Queue;
-    newNode->value = 0;
-    newNode->next = NULL;
-
-    return newNode;
-}*/
 
 void printList(Queue *q)
 {
@@ -139,13 +113,11 @@ void printList(Queue *q)
     prints a linked list
     */
     
-    if(q)
+    for(int i = 0; i < q->size; i++)
     {
-        std::cout << q->value << "\n";
-
-        printList(q->next);
-        return;
+        std::cout << q->arr[i] << "\n";
     }
+
     std::cout << "\n";
 }
 
@@ -155,9 +127,6 @@ void freeList(Queue *q)
     frees the allocated structs
     */
 
-    if(q)
-    {
-        freeList(q->next);
-        delete q;
-    } 
+    delete q->arr;
+    delete q;
 }
